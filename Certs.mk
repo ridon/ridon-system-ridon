@@ -38,7 +38,7 @@ $(shell cat $(LOCAL_PATH)/$(2) > $(LOCAL_BUILD_DIR)/$(LOCAL_HASH).0)
 $(shell openssl x509 -inform PEM -text -in $(LOCAL_PATH)/$(2) -out /dev/null >> $(LOCAL_BUILD_DIR)/$(LOCAL_HASH).0)
 $(info Generating cert $(LOCAL_PATH)/$(2) into $(LOCAL_HASH).0)
 
-LOCAL_MODULE := $(1)
+LOCAL_MODULE := $(1)-cacert-$(LOCAL_HASH).0
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Certs.mk
 LOCAL_MODULE_STEM := $(LOCAL_HASH).0
 LOCAL_MODULE_TAGS := optional
@@ -49,11 +49,13 @@ include $$(BUILD_PREBUILT)
 endef
 
 
-ridoncerts := $(call all-files-under,certs)
+ridonsourcecerts := $(call all-files-under,certs)
 
 ridoncerts_target_directory := $(TARGET_OUT)/etc/security/cacerts
 
-$(foreach cacert, $(ridoncerts), $(eval $(call include-prebuilt-with-destination-directory,target-cacert-$(notdir $(cacert)),$(cacert),$(ridoncerts_target_directory))))
+$(foreach cacert, $(ridonsourcecerts), $(eval $(call include-prebuilt-with-destination-directory,target,$(cacert),$(ridoncerts_target_directory))))
+
+ridoncerts := $(call all-files-under,build/certs)
 ridoncerts_target := $(addprefix $(ridoncerts_target_directory)/,$(foreach cacert,$(ridoncerts),$(notdir $(cacert))))
 .PHONY: ridoncerts_target
 ridoncerts: $(ridoncerts_target)
@@ -62,7 +64,7 @@ ridoncerts: $(ridoncerts_target)
 ALL_MODULES.ridoncerts.INSTALLED := $(ridoncerts_target)
 
 ridoncerts_host_directory := $(HOST_OUT)/etc/security/cacerts
-$(foreach cacert, $(ridoncerts), $(eval $(call include-prebuilt-with-destination-directory,host-cacert-$(notdir $(cacert)),$(cacert),$(ridoncerts_host_directory))))
+$(foreach cacert, $(ridoncerts), $(eval $(call include-prebuilt-with-destination-directory,host,$(cacert),$(ridoncerts_host_directory))))
 
 ridoncerts_host := $(addprefix $(ridoncerts_host_directory)/,$(foreach cacert,$(ridoncerts),$(notdir $(cacert))))
 .PHONY: ridoncerts-host
