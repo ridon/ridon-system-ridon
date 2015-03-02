@@ -45,8 +45,8 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_CLASS := ETC
 LOCAL_MODULE_PATH := $(3)
 
-$(eval TOPDIR := $(shell (pwd) ))
-LOCAL_SRC_FILES := ../../$(patsubst $(TOPDIR)/%,%,$(LOCAL_FILENAME))
+$(eval XTOPDIR := $(shell (pwd) ))
+LOCAL_SRC_FILES := ../../$(patsubst $(XTOPDIR)/%,%,$(LOCAL_FILENAME))
 
 include $$(BUILD_PREBUILT)
 endef
